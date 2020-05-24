@@ -1,10 +1,13 @@
 FROM python
 
-WORKDIR /app
+RUN mkdir app
 
-ADD . /app
+RUN cp . /app
+
+RUN cd app
 
 RUN pip3 install -r requirements.txt
 
-CMD ["python","./model.py"]
+CMD ["python","model.py"]
+
 

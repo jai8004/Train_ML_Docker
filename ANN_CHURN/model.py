@@ -15,11 +15,18 @@ import pandas as pd
 
 # Importing the dataset
 dataset = pd.read_csv('Churn_Modelling.csv')
+
+dataset
+
+
+# In[3]:
+
+
 X = dataset.iloc[:, 3:13]
 y = dataset.iloc[:, 13]
 
 
-# In[3]:
+# In[4]:
 
 
 
@@ -28,7 +35,7 @@ geography=pd.get_dummies(X["Geography"],drop_first=True)
 gender=pd.get_dummies(X['Gender'],drop_first=True)
 
 
-# In[4]:
+# In[5]:
 
 
 
@@ -40,7 +47,7 @@ X=pd.concat([X,geography,gender],axis=1)
 X=X.drop(['Geography','Gender'],axis=1)
 
 
-# In[5]:
+# In[6]:
 
 
 
@@ -49,7 +56,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
 
-# In[6]:
+# In[7]:
 
 
 # Feature Scaling
@@ -59,7 +66,7 @@ X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
 
-# In[7]:
+# In[8]:
 
 
 
@@ -72,18 +79,18 @@ from keras.layers import LeakyReLU,PReLU,ELU
 from keras.layers import Dropout
 
 
-# In[8]:
+# In[10]:
 
 
 classifier = Sequential()
-classifier.add(Dense(output_dim = 6, init = 'he_uniform',activation='relu',input_dim = 11))
-classifier.add(Dense(output_dim = 6, init = 'he_uniform',activation='relu'))
-classifier.add(Dense(output_dim = 1, init = 'glorot_uniform', activation = 'sigmoid'))
+classifier.add(Dense(units = 6, kernel_initializer = 'he_uniform',activation='relu',input_dim = 11))
+classifier.add(Dense(units = 6, kernel_initializer = 'he_uniform',activation='relu'))
+classifier.add(Dense(units = 1, kernel_initializer = 'glorot_uniform', activation = 'sigmoid'))
 classifier.compile(optimizer = 'Adamax', loss = 'binary_crossentropy', metrics = ['accuracy'])
-model_history=classifier.fit(X_train, y_train,validation_split=0.33, batch_size = 10, nb_epoch = 100)
+model_history=classifier.fit(X_train, y_train,validation_split=0.33, batch_size = 10, epochs = 50)
 
 
-# In[9]:
+# In[11]:
 
 
 # Predicting the Test set results
@@ -99,19 +106,25 @@ from sklearn.metrics import accuracy_score
 score=accuracy_score(y_pred,y_test)
 
 
-# In[21]:
+# In[12]:
 
 
 score
 
 
-# In[23]:
+# In[13]:
 
 
 f= open("ann_acc.txt","w+")
 f.write(str(round(score*100,2)))
 f.close()
 print("Accuracy of model is = " , round(score*100,2) ,"%")
+
+
+# In[14]:
+
+
+classifier.save('ann_model.h5')
 
 
 # In[ ]:
