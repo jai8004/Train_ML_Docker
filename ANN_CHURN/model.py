@@ -115,7 +115,7 @@ score
 # In[13]:
 
 
-f= open("ann_acc.txt","w+")
+f= open("acc.txt","w+")
 f.write(str(round(score*100,2)))
 f.close()
 print("Accuracy of model is = " , round(score*100,2) ,"%")
