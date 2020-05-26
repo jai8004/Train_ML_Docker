@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 # Importing the libraries
@@ -11,7 +11,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 
 
-# In[2]:
+# In[3]:
 
 
 
@@ -21,7 +21,7 @@ X = dataset.iloc[:, 3:13]
 y = dataset.iloc[:, 13]
 
 
-# In[3]:
+# In[4]:
 
 
 
@@ -30,7 +30,7 @@ geography=pd.get_dummies(X["Geography"],drop_first=True)
 gender=pd.get_dummies(X['Gender'],drop_first=True)
 
 
-# In[4]:
+# In[5]:
 
 
 
@@ -42,7 +42,7 @@ X=pd.concat([X,geography,gender],axis=1)
 X=X.drop(['Geography','Gender'],axis=1)
 
 
-# In[5]:
+# In[6]:
 
 
 
@@ -51,7 +51,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
 
-# In[6]:
+# In[7]:
 
 
 # Feature Scaling
@@ -61,7 +61,7 @@ X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
 
-# In[7]:
+# In[9]:
 
 
 
@@ -74,7 +74,7 @@ from keras.layers import LeakyReLU,PReLU,ELU
 from keras.layers import Dropout
 
 
-# In[8]:
+# In[10]:
 
 
 def tweak_model(classifier,layers,neurons,epochs,model_tweak_count):
@@ -89,12 +89,12 @@ def tweak_model(classifier,layers,neurons,epochs,model_tweak_count):
     return classifier   
 
 
-# In[28]:
+# In[22]:
 
 
 
 neurons = 10
-accuracy = 0
+train_acc = 0
 epochs = 90
 layers = 1 
 flag = 0
@@ -102,7 +102,7 @@ model_tweak_count=0
 
 
 
-while int(accuracy) < 86:
+while int(train_acc) < 90:
     if flag ==1 :
         classifer = keras.backend.clear_session()
         neurons = neurons+10
@@ -120,54 +120,28 @@ while int(accuracy) < 86:
     classifier.compile(optimizer = 'Adamax', loss = 'binary_crossentropy', metrics = ['accuracy'])
     
     model_history=classifier.fit(X_train, y_train,validation_split=0.1, batch_size = 10, epochs = epochs,verbose=1)
-    #t=model_history.history
-   # a=t['accuracy'][epochs-1] * 100
-  #  accuracy=a
-    prev_acaccuracy=accuracy
-    y_pred = classifier.predict(X_test)
-    y_pred = (y_pred > 0.5)    
-    score=accuracy_score(y_pred,y_test)
+   
+    prev_acaccuracy=train_acc
+    m_history=model_history.history
+    train_acc=m_history['accuracy'][epochs-1] 
+    train_acc=round(train_acc*100,2)
+    
+    #prev_acaccuracy=accuracy
+   # y_pred = classifier.predict(X_test)
+   # y_pred = (y_pred > 0.5)    
+   # score=accuracy_score(y_pred,y_test)
   
-    accuracy=round(score*100,2)
+    #accuracy=round(score*100,2)
     print("Previous Accuracy:",prev_acaccuracy)
-    print("Current Accuracy :", accuracy)
-    print("Accuracy Imporved by:",accuracy-prev_acaccuracy)
+    print("Current Accuracy :", train_acc)
+    print("Accuracy Imporved by:",train_acc-prev_acaccuracy)
     flag=1
     
     
 
 
-# In[10]:
-
-
-classifier.save('tweak_model.h5')
-
-
-# In[16]:
-
-
-#t=model_history.history
-#a=t['accuracy'][epochs-1] * 100
-#a
-
-
-# In[17]:
-
-
-##prev_acaccuracy=accuracy
-#y_pred = classifier.predict(X_test)
-#y_pred = (y_pred > 0.5)    
-#score=accuracy_score(y_pred,y_test)
-
-
-# In[18]:
-
-
-score
-
-
 # In[ ]:
 
 
-
+classifier.save('tweak_model.h5')
 
